@@ -81,7 +81,8 @@ the managed Python shared library; use it with `check-npu-provider.py` and retai
 The working runtime wheel is `onnxruntime_vitisai-1.30.0-py3-none-linux_x86_64.whl` from AMD's official 1.9 bundle.
 It was installed locally with --no-deps plus coloredlogs, flatbuffers, packaging and protobuf; numpy and sympy were
 already installed. This is a minimal working inference environment, not a claim that all SDK compiler/quantizer
-packages are installed. The full archive remains downloading for the additional model-conversion work.
+packages are installed. The full official archive has also finished downloading to `~/hairdeck-npu/ryzen_ai-1.9.0.tgz`
+for future model-conversion work; downloading it does not install those additional packages.
 
 ## BF16 correctness limitation and private XRT comparison
 
