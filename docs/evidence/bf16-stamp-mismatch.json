@@ -1,0 +1,138 @@
+{
+  "runtime": "Ryzen AI 1.9.0 / ONNX Runtime Vitis AI 1.30.0",
+  "kernel": "7.2.8-9-omarchy",
+  "cases": {
+    "repro-gemm-32x64": {
+      "shape": [
+        32,
+        64
+      ],
+      "identical": true,
+      "relative_l2": 0.0,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 0
+    },
+    "repro-gemm-384x768": {
+      "shape": [
+        384,
+        768
+      ],
+      "identical": false,
+      "relative_l2": 0.7071067690849304,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 384
+    },
+    "repro-gemm-32x768": {
+      "shape": [
+        32,
+        768
+      ],
+      "identical": true,
+      "relative_l2": 0.0,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 0
+    },
+    "repro-gemm-384x64": {
+      "shape": [
+        384,
+        64
+      ],
+      "identical": true,
+      "relative_l2": 0.0,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 0
+    },
+    "repro-debug": {
+      "shape": [
+        128,
+        768
+      ],
+      "identical": false,
+      "relative_l2": 0.7071068286895752,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 384
+    },
+    "repro-tp1": {
+      "shape": [
+        128,
+        768
+      ],
+      "identical": true,
+      "relative_l2": 0.0,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 0
+    },
+    "repro-overlay-api": {
+      "shape": [
+        128,
+        768
+      ],
+      "identical": false,
+      "relative_l2": 0.7071068286895752,
+      "loaded_xrt": [
+        "/opt/xilinx/xrt/lib/libxrt_core.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_coreutil.so.2.27.0",
+        "/opt/xilinx/xrt/lib/libxrt_driver_xdna.so.2.27.0"
+      ],
+      "zero_column_count": 384
+    },
+    "npu-linear-tp1": {
+      "mode": "npu",
+      "compiled": false,
+      "median_ms": 2.401359502982814,
+      "p90_ms": 2.4659318005433306,
+      "relative_l2": 0.009444491937756538,
+      "max_absolute_error": 0.05736422538757324,
+      "shape": [
+        384,
+        3072
+      ],
+      "layout": "unvectorized",
+      "tp_size": 1
+    },
+    "npu-mlp-tp1": {
+      "mode": "npu",
+      "compiled": false,
+      "median_ms": 9.630412991100457,
+      "p90_ms": 10.013244897709228,
+      "relative_l2": 0.00806702021509409,
+      "max_absolute_error": 0.4272003173828125,
+      "shape": [
+        2,
+        192,
+        768
+      ],
+      "layout": "unvectorized",
+      "tp_size": 1
+    }
+  },
+  "libraries": {
+    "libonnxruntime_vitisai_ep.so": "d9d396293b2c9f32596007b5519ef1097ac138e0d2d54728c104284ccbf51b2f",
+    "libflexmlrt.so": "70b78aa4d6656f721e37b722b824c50b38e1fbde0db85849366da918c218f924",
+    "libvaiml2.so": "05362f8e4196d593b0662133a0decaae4ec9181b3d19843d6ebd399e0e246bda"
+  }
+}

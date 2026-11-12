@@ -86,7 +86,7 @@ for future model-conversion work; downloading it does not install those addition
 
 ## BF16 correctness limitation and private XRT comparison
 
-A HairDeck Linear probe with released weights and synthetic input produces half-zero output under the BF16 VAIML
+A HairDeck Linear probe with released weights and synthetic input initially produced half-zero output under the BF16 VAIML
 path (relative L2 error 0.70665 for shape 384x768). CPU ONNX agrees with CPU PyTorch; GPU BF16 is also accurate.
 Vendor quicktest success therefore does not establish arbitrary BF16 model correctness.
 
@@ -100,3 +100,9 @@ Fresh compilation on 2.26 reproduced the same error with both automatic and vect
 the newer XRT version as the sole explanation; the BF16 path remains experimental and is not enabled in HairDeck.
 See the [HairDeck investigation](https://github.com/jethac/HairDeck/blob/rocm/docs/strix-halo-investigation.md) for
 the model probe and measurements.
+
+The defect is now localized: two-stamp tiling produces a graph containing only the first compute stamp. A verified
+`tp_size=1` workaround restores every channel on a deterministic identity Gemm and the original HairDeck Linear/MLP.
+Use [configs/vaiml-bf16-single-stamp.json](../configs/vaiml-bf16-single-stamp.json) with a fresh compiled-model cache.
+See [the complete diagnosis and reproducer](bf16-stamp-mismatch.md). This fixes the observed missing-output defect;
+the closed compiler's general two-stamp path remains unpatched, and no production HairDeck NPU path is enabled.
