@@ -58,3 +58,24 @@ The SDK extraction wrapper successfully created its Python 3.12 environment and 
 1.9 wheel-index endpoint returned HTTP 403 for onnxruntime-vitisai, so dependency resolution failed. The official
 bundled .tgz distribution is downloading as an alternative source for those wheels. SDK-based model inference is
 not yet verified. The earlier Ubuntu experiment container is stopped; all results here were obtained on native Arch.
+
+## Real model execution confirmed
+
+AMD's 1.9 quicktest model now runs through Vitis AI on the native Arch stack. The partition log explicitly reports
+398 NPU operators, 2 VITIS_EP_CPU operators, one NPU subgraph and `Actually running on NPU 1`. This is a small vendor
+model, not yet a HairDeck stage. XRT 2.27 worked for this case despite the SDK's 2.26 reference version.
+
+Two compatibility fixes were needed: clear executable-stack metadata on the private environment's
+`onnxruntime/capi/onnxruntime_pybind11_state.so` with `patchelf --clear-execstack`, and a private
+`libncurses.so.6 -> /usr/lib/libncursesw.so.6` link. No system library was replaced. The packaged SDK's
+`quicktest.py` originally reported success after silently falling back to CPU; always check provider creation and
+actual graph placement, not just its exit status.
+
+The new `npu-run.sh` raises the invoking shell's memlock limit through sudo/prlimit, then runs the requested command
+as the original user. It avoids running inference as root. `run-sdk.sh` configures private library paths, including
+the managed Python shared library; use it with `check-npu-provider.py` and retain the partition log.
+
+The working runtime wheel is `onnxruntime_vitisai-1.30.0-py3-none-linux_x86_64.whl` from AMD's official 1.9 bundle.
+It was installed locally with --no-deps plus coloredlogs, flatbuffers, packaging and protobuf; numpy and sympy were
+already installed. This is a minimal working inference environment, not a claim that all SDK compiler/quantizer
+packages are installed. The full archive remains downloading for the additional model-conversion work.
