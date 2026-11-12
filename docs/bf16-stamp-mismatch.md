@@ -93,3 +93,20 @@ end-to-end HairDeck quality or a speed improvement. General two-stamp compilatio
 Version details, library SHA-256 hashes, shape results and isolated probe timings are retained in
 [bf16-stamp-mismatch.json](evidence/bf16-stamp-mismatch.json). Local detailed artifacts and XRT transfer dumps remain
 under `~/hairdeck-npu/repro-debug`; the fixed compiler intermediates are under `~/hairdeck-npu/repro-tp1`.
+
+
+## Follow-up: the workaround does not guarantee whole-model compatibility
+
+A later HairDeck BiRefNet experiment used this same native Arch runtime and `tp_size=1`. The deployed
+768px model exported and passed CPU comparisons, but compiler tiling failures caused every subgraph
+to fall back to CPU. ORT still listed the VitisAI provider; execution profiling contained only CPU events.
+A captured real decoder block reproduces `transpose4d failed to find tiling solution for perm13`
+with dimensions `[9,2,48,48]`. An equivalent row-packed sampling layout compiles for NPU but fails at
+execution with `ERT_CMD_STATE_TIMEOUT`. The already-validated attention probe still runs correctly
+after that timeout, so the device/runtime is not generally unavailable.
+
+These are additional unresolved graph/compiler/runtime limitations, not a recurrence proved to share
+the missing-stamp root cause. No kernel, firmware or global library change was made to pursue them.
+HairDeck's [continued optimization notes](https://github.com/jethac/HairDeck/blob/rocm/docs/continued-optimization.md)
+retain the exact reduced export scripts, numerical comparisons and rejected runtime results.
+Whole-stage offload remains disabled; no NPU speedup or GPU/NPU-overlap result is claimed.
