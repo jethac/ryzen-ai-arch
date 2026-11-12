@@ -1,0 +1,16 @@
+# Packages only the matched userspace shim from an existing native source build.
+pkgname=xrt-plugin-amdxdna-native
+pkgver=2.27.0
+pkgrel=1
+pkgdesc='AMD XDNA userspace plugin for the in-tree kernel driver'
+arch=(x86_64)
+url='https://github.com/amd/xdna-driver'
+license=('Apache-2.0')
+depends=("xrt-base=$pkgver" "xrt-npu=$pkgver")
+provides=("xrt-plugin-amdxdna=$pkgver")
+conflicts=('xrt-plugin-amdxdna' 'xrt-plugin-amdxdna-intree')
+options=('!strip' '!debug')
+package() {
+  : "${XDNA_BUILD_DIR:?Set XDNA_BUILD_DIR to xdna-driver/build/Release}"
+  DESTDIR="$pkgdir" cmake --install "$XDNA_BUILD_DIR" --component amdxdna
+}

@@ -1,0 +1,24 @@
+# Packages the native XRT build outputs; never installs an external kernel module.
+pkgname=(xrt-base xrt-npu)
+pkgver=2.27.0
+pkgrel=1
+arch=(x86_64)
+url='https://github.com/Xilinx/XRT'
+license=('Apache-2.0')
+options=('!strip' '!debug')
+_archive_prefix='xrt_202710.2.27.0_4.0.6-'
+# Copy the two matching build/Release archives next to this recipe before makepkg.
+source=("${_archive_prefix}-base.tar.gz" "${_archive_prefix}-npu.tar.gz")
+noextract=("${source[@]}")
+sha256sums=('SKIP' 'SKIP') # Locally built artifacts; record hashes alongside the build log.
+package_xrt-base() {
+  pkgdesc='Native Xilinx Runtime base for AMD NPU experiments'
+  depends=('boost-libs' 'libdrm' 'ocl-icd' 'protobuf' 'python' 'util-linux-libs')
+  conflicts=('xrt')
+  bsdtar -xf "$srcdir/${_archive_prefix}-base.tar.gz" -C "$pkgdir"
+}
+package_xrt-npu() {
+  pkgdesc='Native Xilinx Runtime NPU tools'
+  depends=("xrt-base=$pkgver")
+  bsdtar -xf "$srcdir/${_archive_prefix}-npu.tar.gz" -C "$pkgdir"
+}
