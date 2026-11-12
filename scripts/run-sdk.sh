@@ -11,7 +11,7 @@ mkdir -p "$compat"
 if [[ ! -e "$compat/libncurses.so.6" && -e /usr/lib/libncursesw.so.6 ]]; then
   ln -s /usr/lib/libncursesw.so.6 "$compat/libncurses.so.6"
 fi
-pylib="$(dirname "$(dirname "$(readlink -f "$python")")")/lib"
+pylib=$("$python" -c 'import sysconfig; print(sysconfig.get_config_var("LIBDIR"))')
 export RYZEN_AI_INSTALLATION_PATH="$sdk"
 export LD_LIBRARY_PATH="$compat:$sdk/deployment/lib:$sdk/onnxruntime/lib:$pylib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 exec bash "$(dirname "$0")/npu-run.sh" "$python" "$@"
