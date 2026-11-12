@@ -64,6 +64,10 @@ AMD's 1.9 quicktest model now runs through Vitis AI on the native Arch stack. Th
 398 NPU operators, 2 VITIS_EP_CPU operators, one NPU subgraph and `Actually running on NPU 1`. This is a small vendor
 model, not yet a HairDeck stage. XRT 2.27 worked for this case despite the SDK's 2.26 reference version.
 
+`check-npu-provider.py --compare-cpu` additionally compares the same input on ONNX Runtime CPU. The vendor model's
+ten output values were exactly identical on native XRT 2.27 for the seeded input (NumPy seed 42, relative L2 and
+maximum absolute error both zero). This is one diagnostic input, not a model-wide accuracy evaluation.
+
 Two compatibility fixes were needed: clear executable-stack metadata on the private environment's
 `onnxruntime/capi/onnxruntime_pybind11_state.so` with `patchelf --clear-execstack`, and a private
 `libncurses.so.6 -> /usr/lib/libncursesw.so.6` link. No system library was replaced. The packaged SDK's
