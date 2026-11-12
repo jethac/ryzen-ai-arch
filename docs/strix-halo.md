@@ -33,8 +33,7 @@ cd xdna-driver/xrt/build
 ```
 
 The initial configure attempts identified missing OpenCL headers and pybind11; installing the native Arch packages
-resolved those configure failures. Compilation is in progress. The userspace-only XDNA plugin build and real NPU
-inference remain to be completed. No inference/performance claims are made by this document yet.
+resolved those configure failures. The build and native execution results are recorded below.
 
 ## Native execution confirmed (2026-11-12)
 
@@ -52,12 +51,12 @@ sudo prlimit --memlock=unlimited -- bash -c \
   'source /opt/xilinx/xrt/setup.sh >/dev/null && xrt-smi validate --device 0000:c6:00.1'
 ```
 
-A permanent per-user memlock setup is still to be configured before normal unprivileged model execution.
+The process-scoped `npu-run.sh` solution below now supports model execution without running inference as root.
 
 The SDK extraction wrapper successfully created its Python 3.12 environment and installed CPU PyTorch. The vendor
 1.9 wheel-index endpoint returned HTTP 403 for onnxruntime-vitisai, so dependency resolution failed. The official
-bundled .tgz distribution is downloading as an alternative source for those wheels. SDK-based model inference is
-not yet verified. The earlier Ubuntu experiment container is stopped; all results here were obtained on native Arch.
+bundled .tgz distribution supplies the working wheel used below. The earlier Ubuntu experiment container is stopped;
+all results here were obtained on native Arch.
 
 ## Real model execution confirmed
 
@@ -79,3 +78,20 @@ The working runtime wheel is `onnxruntime_vitisai-1.30.0-py3-none-linux_x86_64.w
 It was installed locally with --no-deps plus coloredlogs, flatbuffers, packaging and protobuf; numpy and sympy were
 already installed. This is a minimal working inference environment, not a claim that all SDK compiler/quantizer
 packages are installed. The full archive remains downloading for the additional model-conversion work.
+
+## BF16 correctness limitation and private XRT comparison
+
+A HairDeck Linear probe with released weights and synthetic input produces half-zero output under the BF16 VAIML
+path (relative L2 error 0.70665 for shape 384x768). CPU ONNX agrees with CPU PyTorch; GPU BF16 is also accurate.
+Vendor quicktest success therefore does not establish arbitrary BF16 model correctness.
+
+The SDK-matched source branch was built independently: xdna-driver 1.9 at `a1f7a2fe`, pinned XRT
+`e9db9ab15f10173f8d2fc93ff92ab4c7eb09d2e6`, version 2.26.0. Direct CMake with `SKIP_KMOD=ON` built core, coreutil
+and the shim. Their shared libraries were copied with symlinks into a private prefix's `lib` directory. Running with
+`RYZENAI_XRT_ROOT=/path/to/private/prefix` makes `npu-run.sh` select those libraries without changing pacman packages
+or the kernel driver. `/proc/self/maps` confirmed all three private libraries were loaded.
+
+Fresh compilation on 2.26 reproduced the same error with both automatic and vectorized data layout. This rules out
+the newer XRT version as the sole explanation; the BF16 path remains experimental and is not enabled in HairDeck.
+See the [HairDeck investigation](https://github.com/jethac/HairDeck/blob/rocm/docs/strix-halo-investigation.md) for
+the model probe and measurements.
